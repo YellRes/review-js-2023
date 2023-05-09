@@ -29,7 +29,7 @@ class funPromise {
 
   constructor(executor) {
     // TODO: executor 的this指向问题
-    executor.call(this, this.resolve, this.reject);
+    executor.call(this, this.resolve.bind(this), this.reject.bind(this));
   }
 
   resolve(val) {
@@ -113,3 +113,13 @@ function resolvePromise(nextPromise, x, resolve, reject) {
     resolve(x);
   }
 }
+
+const p = new funPromise((res) => {
+  setTimeout(() => {
+    res(1000);
+  }, 1000);
+});
+
+p.then((res) => {
+  return p;
+}).then((res) => console.log(res));
