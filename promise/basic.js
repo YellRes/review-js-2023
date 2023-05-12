@@ -34,6 +34,7 @@ class funPromise {
 
   resolve(val) {
     if (this.status !== "pending") return;
+
     this.status = "fulfilled";
     this.val = val;
     // Q: resolve 的callback 和 reject的callback 是否相同

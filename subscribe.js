@@ -28,3 +28,4 @@ e.subscribe("info", () => console.log("dog"));
 e.publish("info");
 
 // 发布订阅 多了一个调度中心  调度中心维护了订阅者和发布者的关系
+const info = new Info();

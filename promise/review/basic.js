@@ -40,24 +40,40 @@ class promiseFree {
     let nextPromise = new promiseFree((nextResolve, nextReject) => {
       if (this.status === promiseFree.PENDING) {
         this.onfulfilledCallBack.push(() => {
-          let x = onFulfilled(this.val);
-          resolveThenCallback(nextPromise, x, nextResolve, nextReject);
+          try {
+            let x = onFulfilled(this.val);
+            resolveThenCallback(nextPromise, x, nextResolve, nextReject);
+          } catch (e) {
+            nextReject(e);
+          }
         });
 
         this.onRejectedCallBack.push(() => {
-          let x = onRejected(this.err);
-          resolveThenCallback(nextPromise, x, nextResolve, nextReject);
+          try {
+            let x = onRejected(this.err);
+            resolveThenCallback(nextPromise, x, nextResolve, nextReject);
+          } catch (e) {
+            nextReject(e);
+          }
         });
       }
 
       if (this.status === promiseFree.FULFILLED) {
-        let x = onFulfilled(this.val);
-        resolveThenCallback(nextPromise, x, nextResolve, nextReject);
+        try {
+          let x = onFulfilled(this.val);
+          resolveThenCallback(nextPromise, x, nextResolve, nextReject);
+        } catch (e) {
+          nextReject(e);
+        }
       }
 
       if (this.status === promiseFree.REJECTED) {
-        let x = onRejected(this.err);
-        resolveThenCallback(nextPromise, x, nextResolve, nextReject);
+        try {
+          let x = onRejected(this.err);
+          resolveThenCallback(nextPromise, x, nextResolve, nextReject);
+        } catch (e) {
+          nextReject(e);
+        }
       }
     });
 
@@ -82,16 +98,20 @@ const resolveThenCallback = (nextPromise, x, nextResolve, nextReject) => {
   if (x && x.then && (typeof x === "function" || typeof x === "object")) {
     try {
       let then = x.then;
-      then.call(
-        x,
-        (res) => {
-          // 返回的promise的状态和  x的状态一致
-          resolveThenCallback(nextPromise, res, nextPromise, nextReject);
-        },
-        (err) => {
-          nextReject(err);
-        }
-      );
+      if (typeof then === "function") {
+        then.call(
+          x,
+          (res) => {
+            // 返回的promise的状态和  x的状态一致
+            resolveThenCallback(nextPromise, res, nextPromise, nextReject);
+          },
+          (err) => {
+            nextReject(err);
+          }
+        );
+      } else {
+        nextResolve(x);
+      }
     } catch (e) {
       nextReject(e);
     }
@@ -99,3 +119,25 @@ const resolveThenCallback = (nextPromise, x, nextResolve, nextReject) => {
     nextResolve(x);
   }
 };
+
+let p = new Promise((res, rej) => {
+  setTimeout(() => {
+    rej("first level");
+  }, 3000);
+});
+
+p.then(
+  (res) => {},
+  (err) => {
+    // TODO: think twice
+    let p = new Promise((res, rej) => {
+      setTimeout(() => {
+        rej("second level");
+      }, 3000);
+    });
+
+    return p;
+  }
+).then((res) => {
+  console.log(res);
+});
