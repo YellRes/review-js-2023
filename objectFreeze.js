@@ -25,6 +25,11 @@ function objectFreeze(obj) {
   console.log(obj);
 }
 
+/**
+ * 第二版
+ * obj 上面的原型属性也不能修改
+ */
+
 {
   /**
    * Thinking:
@@ -64,4 +69,36 @@ function objectFreeze(obj) {
    * obj不可以添加新属性
    * obj原有属性不可以配置
    */
+
+  /**
+   * Object.defineProperty(obj, propertyA)
+   * Q: 当propertyA不在obj上，在obj的原型上面时候，会把obj的原型上属性配置给修改了吗
+   * A: 不会  此时propertyA会被赋值到obj上面
+   */
+
+  {
+    let fun1 = function () {};
+    fun1.prototype.functionName = "function1";
+
+    let person = new fun1();
+    // let personDescriptor = Object.getOwnPropertyDescriptor(person.functionName);
+    // personDescriptor.writable = false;
+    Object.defineProperty(person, "functionName", {});
+
+    person.functionName = "yellRes";
+    console.log(person, "person");
+  }
+
+  {
+    //Q: 此外，冻结一个对象后该对象的原型也不能被修改
+    let func1 = function () {};
+    func1.prototype.name = "func1";
+
+    let person = new func1();
+    let personF = Object.freeze(person);
+    // personF.name   ==> func1
+
+    // TODO: ? 此外，冻结一个对象后该对象的原型也不能被修改 如何理解？
+    // func1.prototype.name = 'func2' 成功执行
+  }
 }

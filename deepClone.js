@@ -36,3 +36,28 @@ const linkNode2 = {
 linkNode1.next = linkNode2;
 
 console.log(_deepClone(linkNode1));
+
+{
+  const wm = new WeakMap();
+  const _deepClone = (obj) => {
+    // 非引用数据
+    if (obj && (typeof obj !== "object" || typeof obj !== "function")) {
+      return obj;
+    }
+
+    if (!obj) return obj;
+
+    if (wm.has(obj)) {
+      return wm.get(obj);
+    }
+
+    let _obj = {};
+    for (let key of Object.keys(obj)) {
+      let val = obj[key];
+      wm.set(val, _obj);
+      _obj[key] = _deepClone(val);
+    }
+
+    return _obj;
+  };
+}
