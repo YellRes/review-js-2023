@@ -236,17 +236,22 @@
     keys() {
       let createIterator = () => {
         let i = 0;
-        let value = i < this._values.length ? this._values[i] : undefined;
-        let done = i < this._values.length ? false : true;
-        i++;
+
         return {
-          value,
-          done,
+          next: () => {
+            let value = i < this._values.length ? this._values[i] : undefined;
+            let done = i < this._values.length ? false : true;
+            i++;
+            return {
+              value,
+              done,
+            };
+          },
         };
       };
 
       return {
-        [Symbol.iterator]: createIterator(),
+        [Symbol.iterator]: createIterator,
       };
     }
 
@@ -258,4 +263,4 @@
   let ns = new FunSet(new Set([1, 2, 3, 4]));
   forOf(ns.keys(), (val) => console.log(val));
 }
-const fs = new FunSet();
+// const fs = new FunSet();

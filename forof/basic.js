@@ -41,6 +41,8 @@ console.log(iterator.next());
  * map.values()
  * map.entries()
  *
+ * 对象的[Symbol.iterator]属性是个函数
+ *
  */
 const obj = {
   value: 1,
