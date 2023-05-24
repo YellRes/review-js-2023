@@ -84,3 +84,21 @@ const _throttleLT = (fn, timeout, { leading, trailing }) => {
     }
   };
 };
+
+const maxNumberInRange = (arr) => {
+  let map = new Map();
+  let maxNumber = 0;
+  let maxValue = -Infinity;
+
+  for (let i = 0; i < arr.length; i++) {
+    let num = map.get(arr[i]) || 0;
+    map.set(arr[i], ++num);
+
+    if (maxNumber < num) {
+      maxNumber = num;
+      maxValue = arr[i];
+    }
+  }
+
+  return maxValue;
+};
